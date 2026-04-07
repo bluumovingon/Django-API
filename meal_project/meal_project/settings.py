@@ -1,0 +1,28 @@
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+SECRET_KEY = 'django-insecure-mealdb-secret-key-2024'
+DEBUG = True
+ALLOWED_HOSTS = ['*']
+
+INSTALLED_APPS = [
+    'django.contrib.staticfiles',
+    'meals',
+]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+            ],
+        },
+    },
+]
+
+STATIC_URL = '/static/'
+ROOT_URLCONF = 'meal_project.urls'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

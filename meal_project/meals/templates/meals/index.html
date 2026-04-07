@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MealFinder — Temukan Resep Favoritmu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f0e0c;
+            --surface: #1a1815;
+            --card: #201e1b;
+            --border: #2e2b26;
+            --accent: #e8a24a;
+            --accent2: #c45c2e;
+            --text: #f0ebe3;
+            --muted: #7a7368;
+            --tag-bg: #2a261f;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            background: rgba(15,14,12,0.92);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .logo span { color: var(--text); }
+
+        /* HERO */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 3rem;
+            background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(232,162,74,0.08) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: 1.05rem;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+
+        /* SEARCH */
+        .search-bar {
+            display: flex;
+            max-width: 540px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(232,162,74,0.12);
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 0.85rem 1.25rem;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .search-bar input::placeholder { color: var(--muted); }
+
+        .search-bar button {
+            background: var(--accent);
+            border: none;
+            padding: 0 1.5rem;
+            color: #0f0e0c;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .search-bar button:hover { background: #f0b25a; }
+
+        /* RESULT META */
+        .result-meta {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .result-meta .count {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .result-meta .keyword {
+            font-size: 0.85rem;
+            background: var(--tag-bg);
+            color: var(--accent);
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+            border: 1px solid rgba(232,162,74,0.2);
+        }
+
+        /* GRID */
+        .grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        /* CARD */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(232,162,74,0.35);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+        }
+
+        .card-img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+            background: var(--surface);
+        }
+
+        .card-body {
+            padding: 1rem 1.1rem 1.2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--text);
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-top: auto;
+        }
+
+        .tag {
+            font-size: 0.72rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .tag-cat {
+            background: rgba(232,162,74,0.12);
+            color: var(--accent);
+            border: 1px solid rgba(232,162,74,0.2);
+        }
+
+        .tag-area {
+            background: rgba(196,92,46,0.12);
+            color: #e07b50;
+            border: 1px solid rgba(196,92,46,0.2);
+        }
+
+        /* EMPTY STATE */
+        .empty {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 5rem 1rem;
+            color: var(--muted);
+        }
+
+        .empty h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        footer a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Meal<span>Finder</span></div>
+    <span style="font-size:0.8rem; color: var(--muted);">Powered by TheMealDB</span>
+</header>
+
+<section class="hero">
+    <h1>Temukan <em>Resep</em><br>Terbaik Hari Ini</h1>
+    <p>Cari ratusan resep dari seluruh dunia secara instan</p>
+
+    <form class="search-bar" method="GET" action="/">
+        <input type="text" name="s" value="{{ query }}" placeholder="Ketik nama makanan, misal: chicken, pasta..." autocomplete="off">
+        <button type="submit">🔍 Cari</button>
+    </form>
+</section>
+
+<div class="result-meta">
+    <span class="count">Menampilkan <strong>{{ total }}</strong> resep untuk</span>
+    <span class="keyword">{{ query }}</span>
+</div>
+
+<div class="grid">
+    {% if meals %}
+        {% for meal in meals %}
+        <a href="/meal/{{ meal.id }}/" class="card">
+            <img class="card-img" src="{{ meal.thumbnail }}" alt="{{ meal.name }}" loading="lazy">
+            <div class="card-body">
+                <div class="card-title">{{ meal.name }}</div>
+                <div class="card-tags">
+                    {% if meal.category %}
+                    <span class="tag tag-cat">{{ meal.category }}</span>
+                    {% endif %}
+                    {% if meal.area %}
+                    <span class="tag tag-area">{{ meal.area }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    {% else %}
+        <div class="empty">
+            <h3>Resep tidak ditemukan</h3>
+            <p>Coba kata kunci lain seperti "beef", "pasta", atau "salad"</p>
+        </div>
+    {% endif %}
+</div>
+
+<footer>
+    Data resep dari <a href="https://www.themealdb.com" target="_blank">TheMealDB</a> &nbsp;·&nbsp; Django Recipe App
+</footer>
+
+</body>
+</html>

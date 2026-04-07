@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if meal %}{{ meal.name }}{% else %}Resep Tidak Ditemukan{% endif %} — MealFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f0e0c;
+            --surface: #1a1815;
+            --card: #201e1b;
+            --border: #2e2b26;
+            --accent: #e8a24a;
+            --text: #f0ebe3;
+            --muted: #7a7368;
+            --tag-bg: #2a261f;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            background: rgba(15,14,12,0.92);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+
+        .logo span { color: var(--text); }
+
+        .back-btn {
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+
+        /* HERO IMAGE */
+        .meal-hero {
+            width: 100%;
+            max-height: 420px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .meal-hero img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            display: block;
+            filter: brightness(0.7);
+        }
+
+        .meal-hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem 2.5rem;
+            background: linear-gradient(transparent, rgba(15,14,12,0.95));
+        }
+
+        .meal-hero-overlay h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 900;
+            line-height: 1.1;
+            color: var(--text);
+            max-width: 800px;
+            margin-bottom: 0.75rem;
+        }
+
+        .meal-meta-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            font-size: 0.78rem;
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .tag-cat { background: rgba(232,162,74,0.15); color: var(--accent); border: 1px solid rgba(232,162,74,0.25); }
+        .tag-area { background: rgba(196,92,46,0.15); color: #e07b50; border: 1px solid rgba(196,92,46,0.25); }
+        .tag-tag { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid rgba(255,255,255,0.1); }
+
+        /* CONTENT */
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem 5rem;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2.5rem;
+        }
+
+        @media (max-width: 700px) {
+            .content { grid-template-columns: 1fr; }
+        }
+
+        /* INSTRUCTIONS */
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .instructions {
+            font-size: 0.95rem;
+            line-height: 1.85;
+            color: #c8c0b4;
+            white-space: pre-line;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .ingredients-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.25rem 1.4rem;
+        }
+
+        .ingredients-box ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        .ingredients-box li {
+            font-size: 0.9rem;
+            color: #c8c0b4;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .ingredients-box li:last-child { border-bottom: none; }
+
+        .ingredients-box li::before {
+            content: '·';
+            color: var(--accent);
+            font-size: 1.3rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        /* YOUTUBE */
+        .yt-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            background: #c8002a;
+            color: #fff;
+            text-decoration: none;
+            padding: 0.85rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .yt-btn:hover { background: #e0003a; }
+
+        /* NOT FOUND */
+        .not-found {
+            text-align: center;
+            padding: 6rem 2rem;
+            color: var(--muted);
+        }
+
+        .not-found h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+
+        .not-found a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        footer a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Meal<span>Finder</span></div>
+    <a href="/" class="back-btn">← Kembali ke Pencarian</a>
+</header>
+
+{% if meal %}
+
+<div class="meal-hero">
+    <img src="{{ meal.thumbnail }}" alt="{{ meal.name }}">
+    <div class="meal-hero-overlay">
+        <h1>{{ meal.name }}</h1>
+        <div class="meal-meta-tags">
+            {% if meal.category %}<span class="tag tag-cat">{{ meal.category }}</span>{% endif %}
+            {% if meal.area %}<span class="tag tag-area">🌍 {{ meal.area }}</span>{% endif %}
+            {% if meal.tags %}
+                {% for t in meal.tags %}
+                <span class="tag tag-tag">{{ t }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div>
+        <p class="section-label">Cara Membuat</p>
+        <p class="instructions">{{ meal.instructions }}</p>
+    </div>
+
+    <aside class="sidebar">
+        <div class="ingredients-box">
+            <p class="section-label">Bahan-Bahan ({{ meal.ingredients|length }})</p>
+            <ul>
+                {% for item in meal.ingredients %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {% if meal.youtube %}
+        <a href="{{ meal.youtube }}" target="_blank" class="yt-btn">
+            ▶ Tonton di YouTube
+        </a>
+        {% endif %}
+    </aside>
+</div>
+
+{% else %}
+
+<div class="not-found">
+    <h2>Resep tidak ditemukan</h2>
+    <p>Resep yang kamu cari tidak tersedia. <a href="/">Kembali ke pencarian</a>.</p>
+</div>
+
+{% endif %}
+
+<footer>
+    Data resep dari <a href="https://www.themealdb.com" target="_blank">TheMealDB</a> &nbsp;·&nbsp; Django Recipe App
+</footer>
+
+</body>
+</html>
